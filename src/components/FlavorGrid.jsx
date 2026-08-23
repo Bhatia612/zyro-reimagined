@@ -43,7 +43,7 @@ export default function FlavorGrid() {
               alt={f.name}
               className="h-64 object-contain drop-shadow-xl"
             />
-            <p className="text-white/70 uppercase tracking-[0.2em] text-xs mt-6">
+            <p className="color-ink-soft uppercase tracking-[0.2em] text-xs mt-6">
               {f.sub}
             </p>
             <h3 className="color-ink text-2xl font-display mt-2 tracking-tight">

@@ -5,7 +5,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const lines = ['NOTHING', 'UNNECESSARY', 'ZERO SUGAR', 'ZERO CALORIES']
+const lines = ['ZERO SUGAR', 'ZERO CALORIES', 'NOTHING', 'UNNECESSARY',]
 
 export default function IntroText() {
     const root = useRef(null)
@@ -14,7 +14,7 @@ export default function IntroText() {
     useGSAP(() => {
         gsap.set(panel.current, { yPercent: 100 })
 
-        const raise = () => gsap.to(panel.current, { yPercent: 0, duration: 0.6, ease: 'power3.inOut', delay: 0.25, overwrite: true })
+        const raise = () => gsap.to(panel.current, { yPercent: 0, duration: 0.6, ease: 'power3.inOut', overwrite: true })
         const drop = () => gsap.to(panel.current, { yPercent: 100, duration: 0.6, ease: 'power3.inOut', overwrite: true })
 
         window.addEventListener('video:docked', raise)
@@ -30,14 +30,19 @@ export default function IntroText() {
             },
         })
 
-        tl.to({}, { duration: 0.4 })
+
+        gsap.set('.line-0', { autoAlpha: 1, yPercent: 0 })
 
         lines.forEach((_, i) => {
-            tl.fromTo(
-                `.line-${i}`,
-                { autoAlpha: 0, yPercent: 60 },
-                { autoAlpha: 1, yPercent: 0, ease: 'power3.out' }
-            ).to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
+            if (i === 0) {
+                tl.to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
+            } else {
+                tl.fromTo(
+                    `.line-${i}`,
+                    { autoAlpha: 0, yPercent: 60 },
+                    { autoAlpha: 1, yPercent: 0, ease: 'power3.out' }
+                ).to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
+            }
         })
 
         return () => {
@@ -47,7 +52,7 @@ export default function IntroText() {
     }, { scope: root })
 
     return (
-        <section ref={root} className="h-[400vh] relative z-10">
+        <section ref={root} className="h-[300vh] relative z-10">
             <div className="introtext-stage h-screen w-full overflow-hidden">
                 <div ref={panel} className="absolute inset-0 bg-base z-0" />
                 <div className="relative z-10 h-full w-full flex items-center justify-center">

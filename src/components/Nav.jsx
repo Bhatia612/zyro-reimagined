@@ -16,7 +16,7 @@ export default function Nav() {
       duration: 0.3,
       scrollTrigger: {
         trigger: document.body,
-        start: '90vh top',
+        start: '800vh top',
         toggleActions: 'play none none reverse',
       },
     })

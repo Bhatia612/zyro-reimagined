@@ -10,6 +10,8 @@ export default function IntroHero() {
   const root = useRef(null)
   const videoBox = useRef(null)
   const videoEl = useRef(null)
+  const [docked, setDocked] = useState(false)
+  const [muted, setMuted] = useState(true)
 
 
   const [ratio, setRatio] = useState(null)
@@ -30,7 +32,7 @@ export default function IntroHero() {
 
     const f = fit(vw, vh)
     const ins = fit(vw * 0.7, vh * 0.7)
-    const cw = vw * 0.16
+    const cw = vw * 0.26
     const ch = cw / ratio
 
     return {
@@ -44,7 +46,6 @@ export default function IntroHero() {
     if (!ratio) return
 
     gsap.set(videoBox.current, sizes(ratio).full)
-    gsap.set('.intro-text', { xPercent: 120, autoAlpha: 0 })
 
     const tl = gsap.timeline({
       scrollTrigger: {
@@ -58,11 +59,10 @@ export default function IntroHero() {
     })
 
     tl.to(videoBox.current, { ...sizes(ratio).inset, ease: 'none', duration: 2 }, 0)
-      .to('.intro-text', { xPercent: 0, autoAlpha: 1, ease: 'none', duration: 2 }, 0)
       .to({}, { duration: 1 })
       .to(videoBox.current, { ...sizes(ratio).corner, ease: 'power4.in', duration: 1 })
-      .to('.intro-text', { xPercent: -30, autoAlpha: 0, ease: 'power4.in', duration: .5 }, '<')
       .call(() => window.dispatchEvent(new CustomEvent('video:docked')))
+      .to('.intro-bg', { backgroundColor: '#ffffff', ease: 'none', duration: 2 })
 
     const onResize = () => ScrollTrigger.refresh()
     window.addEventListener('resize', onResize)
@@ -75,41 +75,65 @@ export default function IntroHero() {
   useEffect(() => {
     const v = videoEl.current
     if (!v) return
-    let usedGesture = false
 
-    const firstGesture = () => {
-      if (usedGesture) return
-      usedGesture = true
+    const unlock = () => {
       v.muted = false
-      v.play().catch(() => { v.muted = true })
-      window.removeEventListener('scroll', firstGesture)
-      window.removeEventListener('click', firstGesture)
+      setMuted(false)
+      v.play().then(() => {
+        if (v.muted === false) {
+          window.removeEventListener('click', unlock)
+          window.removeEventListener('keydown', unlock)
+          window.removeEventListener('touchstart', unlock)
+          window.removeEventListener('scroll', unlock)
+          window.removeEventListener('mousemove', unlock)
+          window.removeEventListener('wheel', unlock)
+        }
+      }).catch(() => { v.muted = true; setMuted(true) })
     }
-    window.addEventListener('scroll', firstGesture, { once: false })
-    window.addEventListener('click', firstGesture)
+    window.addEventListener('click', unlock)
+    window.addEventListener('keydown', unlock)
+    window.addEventListener('touchstart', unlock)
+    window.addEventListener('scroll', unlock)
+    window.addEventListener('mousemove', unlock)
+    window.addEventListener('wheel', unlock)
 
-    const stop = () => { v.muted = true; v.pause() }
-    const resume = () => { v.muted = false; v.play().catch(() => { v.muted = false }) }
+    const onDocked = () => setDocked(true)
+    const onUndocked = () => setDocked(false)
+    window.addEventListener('video:docked', onDocked)
+    window.addEventListener('video:undocked', onUndocked)
+
+    const stop = () => v.pause()
+    const resume = () => v.play().catch(() => { })
     window.addEventListener('video:stop', stop)
     window.addEventListener('video:resume', resume)
+
     return () => {
-      window.removeEventListener('scroll', firstGesture)
-      window.removeEventListener('click', firstGesture)
+      window.removeEventListener('click', unlock)
+      window.removeEventListener('keydown', unlock)
+      window.removeEventListener('touchstart', unlock)
+      window.removeEventListener('scroll', unlock)
+      window.removeEventListener('mousemove', unlock)
+      window.removeEventListener('wheel', unlock)
+      window.removeEventListener('video:docked', onDocked)
+      window.removeEventListener('video:undocked', onUndocked)
       window.removeEventListener('video:stop', stop)
       window.removeEventListener('video:resume', resume)
     }
   }, [])
+
+  const toggleMute = () => {
+    const v = videoEl.current
+    if (!v) return
+    v.muted = !v.muted
+    setMuted(v.muted)
+  }
 
 
 
 
   return (
     <section ref={root} className="h-[200vh]">
-      <div className="intro-stage fixed inset-0 z-0 flex items-center justify-center overflow-hidden bg-base">
-        <h1 className="intro-text absolute z-0 text-ink font-display tracking-tighter leading-none text-[26vw] select-none">
-          ZYRO
-        </h1>
-      </div>
+      <div className="intro-bg fixed inset-0 z-10 bg-black" />
       <div
         ref={videoBox}
         className="fixed z-20 overflow-hidden shadow-2xl bg-neutral-800 pointer-events-none"
@@ -128,6 +152,15 @@ export default function IntroHero() {
           playsInline
           src={videoAdd}
         />
+        {docked && (
+          <button
+            onClick={toggleMute}
+            className="absolute bottom-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 backdrop-blur text-white text-xs pointer-events-auto"
+            aria-label={muted ? 'Unmute' : 'Mute'}
+          >
+            {muted ? '🔇' : '🔊'}
+          </button>
+        )}
       </div>
     </section>
   )
