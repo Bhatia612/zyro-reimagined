@@ -27,8 +27,8 @@ export default function FlavorGrid() {
   }, { scope: root })
 
   return (
-    <section ref={root} className="relative z-10 bg-neutral-950 py-32 px-6">
-      <h2 className="text-white text-4xl md:text-6xl font-black text-center mb-20 tracking-tight">
+    <section ref={root} className="relative z-30 bg-base py-32 px-6">
+      <h2 className="text-ink text-4xl md:text-6xl font-display text-center mb-20 tracking-tight">
         The Full Lineup
       </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
@@ -46,7 +46,7 @@ export default function FlavorGrid() {
             <p className="text-white/70 uppercase tracking-[0.2em] text-xs mt-6">
               {f.sub}
             </p>
-            <h3 className="text-white text-2xl font-black mt-2 tracking-tight">
+            <h3 className="color-ink text-2xl font-display mt-2 tracking-tight">
               {f.name}
             </h3>
           </div>

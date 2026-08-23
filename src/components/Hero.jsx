@@ -52,10 +52,17 @@ export default function Hero() {
             .from('.hero-stage h1', { autoAlpha: 0, y: 20, duration: 0.6 }, '-=0.4')
     }, { scope: root })
 
+    ScrollTrigger.create({
+        trigger: root.current,
+        start: 'top bottom',
+        onEnter: () => window.dispatchEvent(new CustomEvent('video:stop')),
+        onLeaveBack: () => window.dispatchEvent(new CustomEvent('video:resume')),
+    })
+
     return (
-    <section ref={root} style={{ height: `${flavors.length * 100}vh` }} className="relative z-10 bg-neutral-950">
+        <section ref={root} style={{ height: `${flavors.length * 100}vh` }} className="relative z-30 bg-base">
             <div className="hero-stage h-screen w-full flex flex-col items-center justify-center overflow-hidden">
-                <p className="text-white/80 uppercase tracking-[0.3em] text-sm mb-4">
+                <p className="text-ink-faint uppercase tracking-[0.3em] text-sm mb-4">
                     {flavors[active].sub}
                 </p>
                 <img
@@ -64,7 +71,7 @@ export default function Hero() {
                     alt={flavors[active].name}
                     className="h-[60vh] object-contain drop-shadow-2xl"
                 />
-                <h1 className="text-white text-5xl md:text-7xl font-black tracking-tight mt-6">
+                <h1 className="text-ink text-5xl md:text-7xl font-display tracking-tight mt-6">
                     {flavors[active].name}
                 </h1>
             </div>

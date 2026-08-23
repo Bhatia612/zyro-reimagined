@@ -49,12 +49,12 @@ export default function IntroText() {
     return (
         <section ref={root} className="h-[400vh] relative z-10">
             <div className="introtext-stage h-screen w-full overflow-hidden">
-                <div ref={panel} className="absolute inset-0 bg-black z-0" />
+                <div ref={panel} className="absolute inset-0 bg-base z-0" />
                 <div className="relative z-10 h-full w-full flex items-center justify-center">
                     {lines.map((text, i) => (
                         <h2
                             key={i}
-                            className={`line-${i} absolute text-white font-black text-[12vw] md:text-[9vw] tracking-tighter text-center px-6`}
+                            className={`line-${i} absolute text-ink font-display text-[12vw] md:text-[9vw] tracking-tighter text-center px-6`}
                         >
                             {text}
                         </h2>

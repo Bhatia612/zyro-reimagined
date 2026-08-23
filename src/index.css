@@ -1,5 +1,35 @@
+@import url('https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;700;900&display=swap');
 @import "tailwindcss";
+
+
+@theme {
+  --color-base: #ffffff;
+  --color-ink: #0f0f0f;
+  --color-ink-soft: #d10000;
+  --color-ink-faint: #d10000ca;
+
+  --color-masala: #5b2d1b;
+  --color-bolt: #0a4ea3;
+  --color-apple: #3a7d1e;
+  --color-lime: #c7d11a;
+
+  --font-display: 'Anton', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+
+body {
+  background-color: var(--color-base);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+html { scrollbar-width: none; }
+html::-webkit-scrollbar { display: none; }
 
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
+
+#addvid {
+  filter: brightness(.8);
+}

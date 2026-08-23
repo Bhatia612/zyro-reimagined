@@ -1,8 +1,8 @@
-import { useRef } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import videoAdd from "../assets/add/add.mp4"
+import videoAdd from "../assets/branding/add.mp4"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -10,101 +10,124 @@ export default function IntroHero() {
   const root = useRef(null)
   const videoBox = useRef(null)
   const videoEl = useRef(null)
-  const ratio = useRef(9 / 16)
+
+
+  const [ratio, setRatio] = useState(null)
+
+  function sizes(ratio) {
+    const vw = window.innerWidth
+    const vh = window.innerHeight
+
+    const fit = (maxW, maxH) => {
+      let w = maxW
+      let h = w / ratio
+      if (h > maxH) {
+        h = maxH
+        w = h * ratio
+      }
+      return { w, h }
+    }
+
+    const f = fit(vw, vh)
+    const ins = fit(vw * 0.7, vh * 0.7)
+    const cw = vw * 0.16
+    const ch = cw / ratio
+
+    return {
+      full: { width: f.w, height: f.h, left: (vw - f.w) / 2, top: (vh - f.h) / 2, borderRadius: 0 },
+      inset: { width: ins.w, height: ins.h, left: (vw - ins.w) / 2, top: (vh - ins.h) / 2, borderRadius: 0 },
+      corner: { width: cw, height: ch, left: vw - cw - 32, top: vh - ch - 32, borderRadius: 0 },
+    }
+  }
 
   useGSAP(() => {
-    const full = () => {
-      const r = ratio.current
-      let w = window.innerWidth
-      let h = w / r
-      if (h > window.innerHeight) {
-        h = window.innerHeight
-        w = h * r
-      }
-      return { width: w, height: h, left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2, borderRadius: 0 }
-    }
+    if (!ratio) return
 
-    const inset = () => {
-      const r = ratio.current
-      let w = window.innerWidth * 0.85
-      let h = w / r
-      if (h > window.innerHeight * 0.85) {
-        h = window.innerHeight * 0.85
-        w = h * r
-      }
-      return { width: w, height: h, left: (window.innerWidth - w) / 2, top: (window.innerHeight - h) / 2, borderRadius: 24 }
-    }
-
-    const corner = () => {
-      const r = ratio.current
-      const w = window.innerWidth * 0.16
-      const h = w / r
-      return { width: w, height: h, left: window.innerWidth - w - 32, top: window.innerHeight - h - 32, borderRadius: 16 }
-    }
-
-    gsap.set(videoBox.current, full())
+    gsap.set(videoBox.current, sizes(ratio).full)
     gsap.set('.intro-text', { xPercent: 120, autoAlpha: 0 })
 
-    gsap.timeline({
-      scrollTrigger: { trigger: root.current, start: 'top top', end: 'bottom top', scrub: 1, invalidateOnRefresh: true },
-    })
-      .to(videoBox.current, { ...inset(), ease: 'none' }, 0)
-      .to('.intro-text', { xPercent: 0, autoAlpha: 1, ease: 'none' }, 0)
-
-
-    let docked = false
-    const dock = () => {
-      if (docked) return
-      docked = true
-      gsap.to(videoBox.current, {
-        ...corner(), duration: 0.35, ease: 'power4.in', overwrite: true,
-        onComplete: () => window.dispatchEvent(new CustomEvent('video:docked')),
-      })
-      gsap.to('.intro-text', { xPercent: -30, autoAlpha: 0, duration: 0.4, ease: 'power2.in', overwrite: true })
-    }
-    const undock = () => {
-      if (!docked) return
-      docked = false
-      gsap.to(videoBox.current, { ...inset(), duration: 0.35, ease: 'power2.out', overwrite: true })
-      gsap.to('.intro-text', { xPercent: 0, autoAlpha: 1, duration: 0.4, ease: 'power2.out', overwrite: true })
-      window.dispatchEvent(new CustomEvent('video:undocked'))
-    }
-
-    ScrollTrigger.create({
-      trigger: root.current,
-      start: 'bottom bottom',
-      onEnter: dock,
-      onLeaveBack: undock,
-      invalidateOnRefresh: true,
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: root.current,
+        start: 'top top',
+        end: 'bottom bottom',
+        scrub: 1,
+        pin: '.intro-stage',
+        invalidateOnRefresh: true,
+      },
     })
 
-    const onResize = () => gsap.set(videoBox.current, docked ? corner() : full())
+    tl.to(videoBox.current, { ...sizes(ratio).inset, ease: 'none', duration: 2 }, 0)
+      .to('.intro-text', { xPercent: 0, autoAlpha: 1, ease: 'none', duration: 2 }, 0)
+      .to({}, { duration: 1 })
+      .to(videoBox.current, { ...sizes(ratio).corner, ease: 'power4.in', duration: 1 })
+      .to('.intro-text', { xPercent: -30, autoAlpha: 0, ease: 'power4.in', duration: .5 }, '<')
+      .call(() => window.dispatchEvent(new CustomEvent('video:docked')))
+
+    const onResize = () => ScrollTrigger.refresh()
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
-  }, { scope: root })
+  }, { dependencies: [ratio], scope: root })
+
+
+
+
+  useEffect(() => {
+    const v = videoEl.current
+    if (!v) return
+    let usedGesture = false
+
+    const firstGesture = () => {
+      if (usedGesture) return
+      usedGesture = true
+      v.muted = false
+      v.play().catch(() => { v.muted = true })
+      window.removeEventListener('scroll', firstGesture)
+      window.removeEventListener('click', firstGesture)
+    }
+    window.addEventListener('scroll', firstGesture, { once: false })
+    window.addEventListener('click', firstGesture)
+
+    const stop = () => { v.muted = true; v.pause() }
+    const resume = () => { v.muted = false; v.play().catch(() => { v.muted = false }) }
+    window.addEventListener('video:stop', stop)
+    window.addEventListener('video:resume', resume)
+    return () => {
+      window.removeEventListener('scroll', firstGesture)
+      window.removeEventListener('click', firstGesture)
+      window.removeEventListener('video:stop', stop)
+      window.removeEventListener('video:resume', resume)
+    }
+  }, [])
+
+
+
 
   return (
-    <section ref={root} className="h-screen">
-      <div className="intro-stage fixed inset-0 z-0 flex items-center justify-center overflow-hidden bg-neutral-950">
-        <h1 className="intro-text absolute z-0 text-white font-black tracking-tighter leading-none text-[26vw] select-none">
+    <section ref={root} className="h-[200vh]">
+      <div className="intro-stage fixed inset-0 z-0 flex items-center justify-center overflow-hidden bg-base">
+        <h1 className="intro-text absolute z-0 text-ink font-display tracking-tighter leading-none text-[26vw] select-none">
           ZYRO
         </h1>
       </div>
       <div
         ref={videoBox}
         className="fixed z-20 overflow-hidden shadow-2xl bg-neutral-800 pointer-events-none"
+        style={{ width: '60vw', height: '34vw', left: '20vw', top: '20vh' }}
       >
         <video
+          id='addvid'
           ref={videoEl}
           onLoadedMetadata={(e) => {
-            ratio.current = e.target.videoWidth / e.target.videoHeight
-            ScrollTrigger.refresh()
+            setRatio(e.target.videoWidth / e.target.videoHeight)
           }}
           className="h-full w-full object-cover"
           autoPlay
+          muted
           loop
           playsInline
-          src={videoAdd} />
+          src={videoAdd}
+        />
       </div>
     </section>
   )

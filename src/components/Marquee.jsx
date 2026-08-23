@@ -35,15 +35,12 @@ export default function Marquee() {
   const row = [...items, ...items, ...items, ...items]
 
   return (
-    <section className="relative z-10 bg-black py-8 overflow-hidden">
+    <section className="relative z-30 bg-base py-8 overflow-hidden">
       <div ref={track} className="flex whitespace-nowrap w-max">
         {row.map((text, i) => (
-          <span
-            key={i}
-            className="text-white text-6xl md:text-8xl font-black uppercase px-8 tracking-tight"
-          >
+          <span className="text-ink text-6xl md:text-8xl font-display uppercase px-8 tracking-tight">
             {text}
-            <span className="text-white/30 px-8">/</span>
+            <span className="text-ink-faint px-8">/</span>
           </span>
         ))}
       </div>

@@ -2,6 +2,7 @@ import { useRef } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import logo from "../assets/branding/logo.avif"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -10,7 +11,7 @@ export default function Nav() {
 
   useGSAP(() => {
     gsap.to(nav.current, {
-      backgroundColor: 'rgba(10,10,10,0.8)',
+      backgroundColor: 'rgba(255,255,255,0.8)',
       backdropFilter: 'blur(8px)',
       duration: 0.3,
       scrollTrigger: {
@@ -41,10 +42,10 @@ export default function Nav() {
   return (
     <nav
       ref={nav}
-      className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-8 py-5 will-change-transform"
+      className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-[6rem] pt-5 will-change-transform"
     >
-      <span className="text-white text-2xl font-black tracking-tight">ZYRO</span>
-      <div className="hidden md:flex gap-8 text-white/90 text-sm uppercase tracking-widest">
+      <span className="text-ink text-2xl font-display tracking-tight"><img className='w-[10rem]' src={logo} alt="Zyro" /></span>
+      <div className="hidden md:flex gap-8 text-ink-soft text-sm uppercase tracking-widest">
         <a href="#">Shop</a>
         <a href="#">Philosophy</a>
         <a href="#">Contact</a>
