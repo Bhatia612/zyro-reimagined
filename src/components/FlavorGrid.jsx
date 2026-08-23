@@ -27,7 +27,7 @@ export default function FlavorGrid() {
   }, { scope: root })
 
   return (
-    <section ref={root} className="bg-neutral-950 py-32 px-6">
+    <section ref={root} className="relative z-10 bg-neutral-950 py-32 px-6">
       <h2 className="text-white text-4xl md:text-6xl font-black text-center mb-20 tracking-tight">
         The Full Lineup
       </h2>

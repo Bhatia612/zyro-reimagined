@@ -1,6 +1,7 @@
 import { useSmoothScroll } from './hooks/useSmoothScroll'
 import Nav from './components/Nav'
 import IntroHero from './components/IntroHero'
+import IntroText from './components/IntroText'
 import Hero from './components/Hero'
 import Marquee from './components/Marquee'
 import FlavorGrid from './components/FlavorGrid'
@@ -13,6 +14,7 @@ export default function App() {
       <Nav />
       <main>
         <IntroHero />
+        <IntroText />
         <Hero />
         <Marquee />
         <FlavorGrid />

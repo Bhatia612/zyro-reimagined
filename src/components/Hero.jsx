@@ -53,7 +53,7 @@ export default function Hero() {
     }, { scope: root })
 
     return (
-        <section ref={root} style={{ height: `${flavors.length * 100}vh` }}>
+    <section ref={root} style={{ height: `${flavors.length * 100}vh` }} className="relative z-10 bg-neutral-950">
             <div className="hero-stage h-screen w-full flex flex-col items-center justify-center overflow-hidden">
                 <p className="text-white/80 uppercase tracking-[0.3em] text-sm mb-4">
                     {flavors[active].sub}

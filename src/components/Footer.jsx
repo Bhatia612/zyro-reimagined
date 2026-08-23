@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="bg-black text-white px-8 py-20">
+    <footer className="relative z-10 bg-black text-white px-8 py-20">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between gap-12">
         <div className="max-w-sm">
           <span className="text-3xl font-black tracking-tight">ZYRO</span>
