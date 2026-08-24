@@ -29,8 +29,9 @@ export default function Nav() {
       start: 0,
       end: 'max',
       onUpdate: (self) => {
-        if (self.scroll() < 100) {
-          if (hidden) { show(); hidden = false }
+        if (self.scroll() < window.innerHeight * 4) {
+          show()
+          hidden = false
           return
         }
         if (self.direction === 1 && !hidden) { hide(); hidden = true }

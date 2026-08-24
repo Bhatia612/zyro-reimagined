@@ -5,7 +5,12 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
-const lines = ['ZERO SUGAR', 'ZERO CALORIES', 'NOTHING', 'UNNECESSARY',]
+const lines = [
+    [{ t: 'ZERO' }, { t: 'SUGAR', hl: true }],
+    [{ t: 'ZERO' }, { t: 'CALORIES', hl: true }],
+    [{ t: 'NOTHING' }],
+    [{ t: 'UNNECESSARY', hl: true }],
+]
 
 export default function IntroText() {
     const root = useRef(null)
@@ -33,16 +38,24 @@ export default function IntroText() {
 
         gsap.set('.line-0', { autoAlpha: 1, yPercent: 0 })
 
-        lines.forEach((_, i) => {
-            if (i === 0) {
-                tl.to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
-            } else {
+        lines.forEach((words, i) => {
+            if (i !== 0) {
                 tl.fromTo(
                     `.line-${i}`,
                     { autoAlpha: 0, yPercent: 60 },
                     { autoAlpha: 1, yPercent: 0, ease: 'power3.out' }
-                ).to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
+                )
             }
+            words.forEach((w, j) => {
+                if (w.hl) {
+                    tl.to(
+                        `.word-${i}-${j}`,
+                        { color: 'var(--color-ink-soft)', duration: 0.4, ease: 'power2.out' },
+                        '<0.2'
+                    )
+                }
+            })
+            tl.to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
         })
 
         return () => {
@@ -52,16 +65,20 @@ export default function IntroText() {
     }, { scope: root })
 
     return (
-        <section ref={root} className="h-[300vh] relative z-10">
+        <section ref={root} className="h-[300vh] relative z-10 font-[800]">
             <div className="introtext-stage h-screen w-full overflow-hidden">
                 <div ref={panel} className="absolute inset-0 bg-base z-0" />
                 <div className="relative z-10 h-full w-full flex items-center justify-center">
-                    {lines.map((text, i) => (
+                    {lines.map((words, i) => (
                         <h2
                             key={i}
-                            className={`line-${i} absolute text-ink font-display text-[12vw] md:text-[9vw] tracking-tighter text-center px-6`}
+                            className={`line-${i} absolute flex gap-4 flex-wrap justify-center font-display text-[12vw] md:text-[9vw] tracking-tighter text-center px-6`}
                         >
-                            {text}
+                            {words.map((w, j) => (
+                                <span key={j} className="relative inline-block px-2">
+                                    <span className={w.hl ? `word-${i}-${j} text-ink` : 'text-ink'}>{w.t}</span>
+                                </span>
+                            ))}
                         </h2>
                     ))}
                 </div>
