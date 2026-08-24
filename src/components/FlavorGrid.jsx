@@ -9,20 +9,21 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 export default function FlavorGrid() {
   const root = useRef(null)
 
+
   useGSAP(() => {
     gsap.set('.flavor-card', { autoAlpha: 0, y: 80 })
 
     ScrollTrigger.batch('.flavor-card', {
       start: 'top 85%',
       onEnter: (batch) =>
-        gsap.to(batch, {
-          autoAlpha: 1,
-          y: 0,
-          duration: 0.8,
-          ease: 'power3.out',
-          stagger: 0.15,
-          overwrite: true,
-        }),
+        gsap.to(batch, { autoAlpha: 1, y: 0, duration: 0.8, ease: 'power3.out', stagger: 0.15, overwrite: true }),
+    })
+
+    ScrollTrigger.create({
+      trigger: root.current,
+      start: 'top bottom',
+      onEnter: () => window.dispatchEvent(new CustomEvent('video:stop')),
+      onLeaveBack: () => { console.log('LINEUP leaveBack'); window.dispatchEvent(new CustomEvent('video:resume')) },
     })
   }, { scope: root })
 
@@ -43,10 +44,10 @@ export default function FlavorGrid() {
               alt={f.name}
               className="h-64 object-contain drop-shadow-xl"
             />
-            <p className="color-ink-soft uppercase tracking-[0.2em] text-xs mt-6">
+            <p className="text-ink-soft uppercase tracking-[0.2em] text-xs mt-6">
               {f.sub}
             </p>
-            <h3 className="color-ink text-2xl font-display mt-2 tracking-tight">
+            <h3 className="text-ink text-2xl font-display mt-2 tracking-tight">
               {f.name}
             </h3>
           </div>

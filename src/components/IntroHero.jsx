@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import videoAdd from "../assets/branding/add.mp4"
+import { Volume2, VolumeX } from 'lucide-react'
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -12,8 +13,6 @@ export default function IntroHero() {
   const videoEl = useRef(null)
   const [docked, setDocked] = useState(false)
   const [muted, setMuted] = useState(true)
-
-
   const [ratio, setRatio] = useState(null)
 
   function sizes(ratio) {
@@ -37,8 +36,8 @@ export default function IntroHero() {
 
     return {
       full: { width: f.w, height: f.h, left: (vw - f.w) / 2, top: (vh - f.h) / 2, borderRadius: 0 },
-      inset: { width: ins.w, height: ins.h, left: (vw - ins.w) / 2, top: (vh - ins.h) / 2, borderRadius: 0 },
-      corner: { width: cw, height: ch, left: vw - cw - 32, top: vh - ch - 32, borderRadius: 0 },
+      inset: { width: ins.w, height: ins.h, left: (vw - ins.w) / 2, top: (vh - ins.h) / 2, borderRadius: 4 },
+      corner: { width: cw, height: ch, left: vw - cw - 32, top: vh - ch - 32, borderRadius: 4 },
     }
   }
 
@@ -53,7 +52,7 @@ export default function IntroHero() {
         start: 'top top',
         end: 'bottom bottom',
         scrub: 1,
-        pin: '.intro-stage',
+        pin: '.intro-bg',
         invalidateOnRefresh: true,
       },
     })
@@ -68,9 +67,6 @@ export default function IntroHero() {
     window.addEventListener('resize', onResize)
     return () => window.removeEventListener('resize', onResize)
   }, { dependencies: [ratio], scope: root })
-
-
-
 
   useEffect(() => {
     const v = videoEl.current
@@ -128,9 +124,6 @@ export default function IntroHero() {
     setMuted(v.muted)
   }
 
-
-
-
   return (
     <section ref={root} className="h-[200vh]">
       <div className="intro-bg fixed inset-0 z-10 bg-black" />
@@ -150,15 +143,16 @@ export default function IntroHero() {
           muted
           loop
           playsInline
-          src={videoAdd}
-        />
+        >
+          <source src={videoAdd} type="video/mp4" />
+        </video>
         {docked && (
           <button
             onClick={toggleMute}
-            className="absolute bottom-2 right-2 z-30 w-8 h-8 flex items-center justify-center rounded-full bg-black/50 backdrop-blur text-white text-xs pointer-events-auto"
+            className="cursor-pointer absolute bottom-2 right-2 z-30 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 backdrop-blur text-white pointer-events-auto"
             aria-label={muted ? 'Unmute' : 'Mute'}
           >
-            {muted ? '🔇' : '🔊'}
+            {muted ? <VolumeX size={16} /> : <Volume2 size={16} />}
           </button>
         )}
       </div>

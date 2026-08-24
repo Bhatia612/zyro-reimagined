@@ -14,16 +14,16 @@ export default function Footer() {
         </div>
         <div className="flex gap-16 font-bold">
           <div className="flex flex-col gap-3 [&>*+*]:text-sm [&>*+*]:pl-2">
-            <span className="text-ink-soft uppercase tracking-widest text-md mb-2 ">Shop</span>
-            <a className="text-ink-faint" href="#">Energy Pop</a>
-            <a className="text-ink-faint" href="#">Indie Pop</a>
-            <a className="text-ink-faint" href="#">Hydrate+</a>
-            <a className="text-ink-faint" href="#">Skinny Pop</a>
+            <span className="text-ink uppercase tracking-widest text-md mb-2">Shop</span>
+            <a href="#">Energy Pop</a>
+            <a href="#">Indie Pop</a>
+            <a href="#">Hydrate+</a>
+            <a href="#">Skinny Pop</a>
           </div>
           <div className="flex flex-col gap-3 font-bold [&>*+*]:text-sm [&>*+*]:pl-2">
-            <span className="text-ink-soft uppercase tracking-widest text-md mb-2 ">About</span>
-            <a className="text-ink-faint" href="#">Philosophy</a>
-            <a className="text-ink-faint" href="#">Contact</a>
+            <span className="text-ink uppercase tracking-widest text-md mb-2">About</span>
+            <a href="#">Philosophy</a>
+            <a href="#">Contact</a>
           </div>
         </div>
       </div>
