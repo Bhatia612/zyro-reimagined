@@ -17,62 +17,100 @@ export default function IntroText() {
     const panel = useRef(null)
 
     useGSAP(() => {
-        gsap.set(panel.current, { yPercent: 100 })
+        const mm = gsap.matchMedia()
 
-        const raise = () => gsap.to(panel.current, { yPercent: 0, duration: 0.6, ease: 'power3.inOut', overwrite: true })
-        const drop = () => gsap.to(panel.current, { yPercent: 100, duration: 0.6, ease: 'power3.inOut', overwrite: true })
-
-        window.addEventListener('video:docked', raise)
-        window.addEventListener('video:undocked', drop)
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: root.current,
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: 1,
-                pin: '.introtext-stage',
-            },
-        })
-
-
-        gsap.set('.line-0', { autoAlpha: 1, yPercent: 0 })
-
-        lines.forEach((words, i) => {
-            if (i !== 0) {
-                tl.fromTo(
-                    `.line-${i}`,
-                    { autoAlpha: 0, yPercent: 60 },
-                    { autoAlpha: 1, yPercent: 0, ease: 'power3.out' }
-                )
-            }
-            words.forEach((w, j) => {
-                if (w.hl) {
-                    tl.to(
-                        `.word-${i}-${j}`,
-                        { color: 'var(--color-ink-soft)', duration: 0.4, ease: 'power2.out' },
-                        '<0.2'
+        const buildSequence = (tl) => {
+            gsap.set('.line-0', { autoAlpha: 1, yPercent: 0 })
+            lines.forEach((words, i) => {
+                if (i !== 0) {
+                    tl.fromTo(
+                        `.line-${i}`,
+                        { autoAlpha: 0, yPercent: 60 },
+                        { autoAlpha: 1, yPercent: 0, ease: 'power3.out' }
                     )
                 }
+                words.forEach((w, j) => {
+                    if (w.hl) {
+                        tl.to(
+                            `.word-${i}-${j}`,
+                            { color: 'var(--color-ink-soft)', duration: 0.4, ease: 'power2.out' },
+                            '<0.2'
+                        )
+                    }
+                })
+                tl.to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
             })
-            tl.to(`.line-${i}`, { autoAlpha: 0, yPercent: -60, ease: 'power3.in' })
+        }
+
+        mm.add('(min-width: 768px)', () => {
+            gsap.set(panel.current, { yPercent: 100 })
+            const raise = () => gsap.to(panel.current, { yPercent: 0, duration: 0.6, ease: 'power3.inOut', delay: 1, overwrite: true })
+            const drop = () => gsap.to(panel.current, { yPercent: 100, duration: 0.6, ease: 'power3.inOut', overwrite: true })
+            window.addEventListener('video:docked', raise)
+            window.addEventListener('video:undocked', drop)
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: root.current,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1,
+                    pin: '.introtext-stage',
+                },
+            })
+
+            buildSequence(tl)
+
+            return () => {
+                window.removeEventListener('video:docked', raise)
+                window.removeEventListener('video:undocked', drop)
+            }
         })
 
-        return () => {
-            window.removeEventListener('video:docked', raise)
-            window.removeEventListener('video:undocked', drop)
-        }
+        mm.add('(max-width: 767px)', () => {
+            gsap.set(panel.current, { yPercent: 100 })
+            const raise = () => gsap.to(panel.current, { yPercent: 0, duration: 0.6, ease: 'power3.inOut', overwrite: true })
+            const drop = () => gsap.to(panel.current, { yPercent: 100, duration: 0.6, ease: 'power3.inOut', overwrite: true })
+            window.addEventListener('video:docked', raise)
+            window.addEventListener('video:undocked', drop)
+
+            const tl = gsap.timeline({
+                scrollTrigger: {
+                    trigger: root.current,
+                    start: 'top top',
+                    end: 'bottom bottom',
+                    scrub: 1,
+                    pin: '.introtext-stage',
+                },
+            })
+            gsap.set('.line-0', { autoAlpha: 0 })
+            ScrollTrigger.create({
+                trigger: root.current,
+                start: 'top 80%',
+                onEnter: () => gsap.set('.line-0', { autoAlpha: 1 }),
+                onLeaveBack: () => gsap.set('.line-0', { autoAlpha: 0 }),
+            })
+
+            buildSequence(tl)
+
+            return () => {
+                window.removeEventListener('video:docked', raise)
+                window.removeEventListener('video:undocked', drop)
+            }
+        })
+
+        return () => mm.revert()
     }, { scope: root })
 
     return (
-        <section ref={root} className="h-[300vh] relative z-10 font-[800]">
+        <section ref={root} className="h-[300vh] relative z-10 font-[800] md:-mt-[150vh]">
             <div className="introtext-stage h-screen w-full overflow-hidden">
                 <div ref={panel} className="absolute inset-0 bg-base z-0" />
-                <div className="relative z-10 h-full w-full flex items-center justify-center">
+                <div className="relative z-10 h-full w-full flex items-end md:items-center justify-center pb-18 md:pb-0">
                     {lines.map((words, i) => (
                         <h2
                             key={i}
-                            className={`line-${i} absolute flex gap-4 flex-wrap justify-center font-display text-[12vw] md:text-[9vw] tracking-tighter text-center px-6`}
+                            className={`line-${i} absolute flex gap-3 md:gap-4 flex-wrap justify-center font-display text-[10vw] md:text-[9vw] tracking-tighter text-center px-6`}
                         >
                             {words.map((w, j) => (
                                 <span key={j} className="relative inline-block px-2">

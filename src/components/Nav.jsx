@@ -1,13 +1,16 @@
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Menu, X } from 'lucide-react'
 import logo from "../assets/branding/logo.avif"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
 export default function Nav() {
   const nav = useRef(null)
+  const menu = useRef(null)
+  const [open, setOpen] = useState(false)
 
   useGSAP(() => {
     gsap.to(nav.current, {
@@ -40,16 +43,49 @@ export default function Nav() {
     })
   }, { scope: nav })
 
+  useGSAP(() => {
+    if (!menu.current) return
+    gsap.to(menu.current, {
+      height: open ? 'auto' : 0,
+      opacity: open ? 1 : 0,
+      duration: 0.4,
+      ease: 'power3.inOut',
+    })
+  }, { dependencies: [open] })
+
   return (
     <nav
       ref={nav}
-      className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-[6rem] pt-5 will-change-transform"
+      className="fixed top-0 left-0 w-full z-50 flex items-center justify-between px-6 md:px-[6rem] py-4 md:pt-5 will-change-transform"
     >
-      <span className="text-ink text-2xl font-display tracking-tight"><img className='w-[10rem]' src={logo} alt="Zyro" /></span>
+      <span className="text-ink font-display tracking-tight">
+        <img className="w-[7rem] md:w-[10rem]" src={logo} alt="Zyro" />
+      </span>
+
       <div className="hidden md:flex gap-8 text-ink-soft text-sm uppercase tracking-widest">
         <a href="#">Shop</a>
         <a href="#">Philosophy</a>
         <a href="#">Contact</a>
+      </div>
+
+      <button
+        className="md:hidden text-ink pointer-events-auto"
+        onClick={() => setOpen(!open)}
+        aria-label={open ? 'Close menu' : 'Open menu'}
+      >
+        {open ? <X size={28} /> : <Menu size={28} />}
+      </button>
+
+      <div
+        ref={menu}
+        className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur flex flex-col overflow-hidden"
+        style={{ height: 0, opacity: 0 }}
+      >
+        <div className="py-8 px-6 flex flex-col gap-6 text-ink-soft text-sm uppercase tracking-widest">
+          <a href="#" onClick={() => setOpen(false)}>Shop</a>
+          <a href="#" onClick={() => setOpen(false)}>Philosophy</a>
+          <a href="#" onClick={() => setOpen(false)}>Contact</a>
+        </div>
       </div>
     </nav>
   )
