@@ -4,6 +4,7 @@ import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import videoAdd from "../assets/branding/add.mp4"
 import { Volume2, VolumeX } from 'lucide-react'
+import logo from "../assets/branding/logo-zyro.png"
 
 gsap.registerPlugin(ScrollTrigger, useGSAP)
 
@@ -49,7 +50,7 @@ export default function IntroHero() {
     mm.add('(min-width: 768px)', () => {
       const s = sizes(ratio)
       gsap.set(videoBox.current, { ...s.full, top: window.innerHeight, autoAlpha: 1 })
-      gsap.set('.intro-word', { autoAlpha: 1, yPercent: 0 })
+      gsap.set('.intro-word', { autoAlpha: 1, yPercent: 0, y: 0 })
 
       const tl = gsap.timeline({
         scrollTrigger: {
@@ -73,9 +74,9 @@ export default function IntroHero() {
 
     mm.add('(max-width: 767px)', () => {
       const m = mobileSize(ratio)
-      const topStart = window.innerHeight * 0.5
+      const topStart = window.innerHeight * 0.45
       gsap.set(videoBox.current, { ...m, top: topStart, autoAlpha: 1 })
-      gsap.set('.intro-word', { autoAlpha: 1, yPercent: -80 })
+      gsap.set('.intro-word', { autoAlpha: 1, yPercent: 0, y: () => -window.innerHeight * 0.3 })
       gsap.set('.intro-bg', { backgroundColor: '#ffffff' })
 
       const tl = gsap.timeline({
@@ -89,8 +90,8 @@ export default function IntroHero() {
         },
       })
 
-      tl.to('.intro-word', { autoAlpha: 0, yPercent: -120, ease: 'power2.in', duration: 1 }, 0)
-        .to(videoBox.current, { top: 72, ease: 'power2.inOut', duration: 1 }, 0)
+      tl.to('.intro-word', { autoAlpha: 0, y: () => -window.innerHeight * 0.6, ease: 'power2.in', duration: 1 }, 0)
+        .to(videoBox.current, { top: 80, ease: 'power2.inOut', duration: 1 }, 0)
         .call(() => window.dispatchEvent(new CustomEvent('video:docked')))
     })
 
@@ -148,9 +149,14 @@ export default function IntroHero() {
   return (
     <section ref={root} className="h-[250vh]">
       <div className="intro-bg fixed inset-0 z-10 bg-white" />
-      <h1 className="intro-word fixed inset-0 z-[15] flex items-center justify-center font-display text-ink text-[26vw] tracking-tighter leading-none select-none pointer-events-none">
-        ZYRO
-      </h1>
+      <div className="intro-word fixed inset-0 z-[15] flex items-center justify-end select-none pointer-events-none">
+        <img
+          src={logo}
+          alt="Zyro"
+          draggable="false"
+          className="w-[95vw] md:w-[70vw] h-auto object-contain"
+        />
+      </div>
       <div
         ref={videoBox}
         className="fixed z-20 overflow-hidden shadow-2xl bg-neutral-800 pointer-events-none"

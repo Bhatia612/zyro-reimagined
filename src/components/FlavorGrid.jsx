@@ -9,7 +9,6 @@ gsap.registerPlugin(ScrollTrigger, useGSAP)
 export default function FlavorGrid() {
   const root = useRef(null)
 
-
   useGSAP(() => {
     gsap.set('.flavor-card', { autoAlpha: 0, y: 80 })
 
@@ -23,31 +22,31 @@ export default function FlavorGrid() {
       trigger: root.current,
       start: 'top bottom',
       onEnter: () => window.dispatchEvent(new CustomEvent('video:stop')),
-      onLeaveBack: () => { console.log('LINEUP leaveBack'); window.dispatchEvent(new CustomEvent('video:resume')) },
+      onLeaveBack: () => window.dispatchEvent(new CustomEvent('video:resume')),
     })
   }, { scope: root })
 
   return (
-    <section ref={root} className="relative z-30 bg-base py-32 px-6">
-      <h2 className="text-ink text-4xl md:text-6xl font-display text-center mb-20 tracking-tight">
+    <section ref={root} className="relative z-30 bg-base py-20 md:py-32 px-5 md:px-6">
+      <h2 className="text-ink text-3xl md:text-6xl font-display text-center mb-12 md:mb-20 tracking-tight">
         The Full Lineup
       </h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-8 max-w-7xl mx-auto">
         {flavors.map((f) => (
           <div
             key={f.name}
-            className="flavor-card rounded-3xl p-8 flex flex-col items-center"
+            className="flavor-card rounded-2xl md:rounded-3xl p-6 md:p-8 flex flex-col items-center"
             style={{ backgroundColor: f.bg }}
           >
             <img
               src={f.can}
               alt={f.name}
-              className="h-64 object-contain drop-shadow-xl"
+              className="h-48 md:h-64 object-contain drop-shadow-xl"
             />
             <p className="text-ink-soft uppercase tracking-[0.2em] text-xs mt-6">
               {f.sub}
             </p>
-            <h3 className="text-ink text-2xl font-display mt-2 tracking-tight">
+            <h3 className="text-ink text-2xl md:text-2xl font-display mt-2 tracking-tight">
               {f.name}
             </h3>
           </div>
