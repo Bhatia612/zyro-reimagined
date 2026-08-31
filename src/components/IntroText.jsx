@@ -103,7 +103,7 @@ export default function IntroText() {
     }, { scope: root })
 
     return (
-        <section ref={root} className="h-[300vh] relative z-10 font-[800] md:-mt-[150vh]">
+        <section ref={root} className="h-[300vh] relative z-0 -mt-[20vh] font-[800] md:z-10 md:-mt-[150vh]">
             <div className="introtext-stage h-screen w-full overflow-hidden">
                 <div ref={panel} className="absolute inset-0 bg-base z-0" />
                 <div className="relative z-10 h-full w-full flex items-end md:items-center justify-center pb-18 md:pb-0">

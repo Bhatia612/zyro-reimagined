@@ -78,7 +78,7 @@ export default function Nav() {
 
       <div
         ref={menu}
-        className="md:hidden absolute top-full left-0 w-full bg-white/95 backdrop-blur flex flex-col overflow-hidden"
+        className="md:hidden absolute top-full left-0 w-full bg-base backdrop-blur flex flex-col overflow-hidden"
         style={{ height: 0, opacity: 0 }}
       >
         <div className="py-8 px-6 flex flex-col gap-6 text-ink-soft text-sm uppercase tracking-widest">

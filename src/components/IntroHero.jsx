@@ -3,6 +3,7 @@ import { useGSAP } from '@gsap/react'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import videoAdd from "../assets/branding/add.mp4"
+import videoAddMobile from "../assets/branding/add-mobile.mp4"
 import { Volume2, VolumeX } from 'lucide-react'
 import logo from "../assets/branding/logo-zyro.png"
 
@@ -15,6 +16,15 @@ export default function IntroHero() {
   const [docked, setDocked] = useState(false)
   const [muted, setMuted] = useState(true)
   const [ratio, setRatio] = useState(null)
+  const [isMobile, setIsMobile] = useState(
+    typeof window !== 'undefined' ? window.innerWidth < 768 : false
+  )
+
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
 
   function sizes(ratio) {
     const vw = window.innerWidth
@@ -36,18 +46,27 @@ export default function IntroHero() {
     }
   }
 
-  function mobileSize(ratio) {
-    const vw = window.innerWidth
-    const w = vw * 0.9
-    const h = w / ratio
-    return { width: w, height: h, left: vw * 0.05, borderRadius: 8 }
-  }
+  useGSAP(() => {
+    if (window.innerWidth >= 768) return
+    gsap.from('.intro-logo', {
+      x: () => window.innerWidth,
+      autoAlpha: 0,
+      ease: 'power3.out',
+      duration: 0.9,
+      delay: 0.3,
+    })
+  }, { scope: root })
 
   useGSAP(() => {
-    if (!ratio) return
     const mm = gsap.matchMedia()
 
     mm.add('(min-width: 768px)', () => {
+      if (!ratio) return
+      // desktop entrance: slide in from right, settle center, shrink
+      gsap.timeline()
+        .from('.intro-logo', { xPercent: 120, ease: 'power3.out', duration: .9 })
+        .to('.intro-logo', { scale: 0.7, ease: 'power2.inOut', duration: 0.3 }, '+=0.1')
+
       const s = sizes(ratio)
       gsap.set(videoBox.current, { ...s.full, top: window.innerHeight, autoAlpha: 1 })
       gsap.set('.intro-word', { autoAlpha: 1, yPercent: 0, y: 0 })
@@ -72,32 +91,9 @@ export default function IntroHero() {
         .to('.intro-bg', { backgroundColor: '#ffffff', ease: 'none', duration: 2 })
     })
 
-    mm.add('(max-width: 767px)', () => {
-      const m = mobileSize(ratio)
-      const topStart = window.innerHeight * 0.45
-      gsap.set(videoBox.current, { ...m, top: topStart, autoAlpha: 1 })
-      gsap.set('.intro-word', { autoAlpha: 1, yPercent: 0, y: () => -window.innerHeight * 0.3 })
-      gsap.set('.intro-bg', { backgroundColor: '#ffffff' })
-
-      const tl = gsap.timeline({
-        scrollTrigger: {
-          trigger: root.current,
-          start: 'top top',
-          end: 'bottom bottom',
-          scrub: 1,
-          pin: '.intro-bg',
-          invalidateOnRefresh: true,
-        },
-      })
-
-      tl.to('.intro-word', { autoAlpha: 0, y: () => -window.innerHeight * 0.6, ease: 'power2.in', duration: 1 }, 0)
-        .to(videoBox.current, { top: 80, ease: 'power2.inOut', duration: 1 }, 0)
-        .call(() => window.dispatchEvent(new CustomEvent('video:docked')))
-    })
-
-    const onResize = () => ScrollTrigger.refresh()
-    window.addEventListener('resize', onResize)
-    return () => { window.removeEventListener('resize', onResize); mm.revert() }
+    const onRefresh = () => ScrollTrigger.refresh()
+    window.addEventListener('resize', onRefresh)
+    return () => { window.removeEventListener('resize', onRefresh); mm.revert() }
   }, { dependencies: [ratio], scope: root })
 
   useEffect(() => {
@@ -137,7 +133,7 @@ export default function IntroHero() {
       window.removeEventListener('video:stop', stop)
       window.removeEventListener('video:resume', resume)
     }
-  }, [])
+  }, [isMobile])
 
   const toggleMute = () => {
     const v = videoEl.current
@@ -146,15 +142,49 @@ export default function IntroHero() {
     setMuted(v.muted)
   }
 
+  if (isMobile) {
+    return (
+      <section ref={root} className="relative overflow-x-hidden">
+        <div
+          className="fixed top-0 left-0 w-full z-20 overflow-hidden bg-black"
+          style={{ aspectRatio: ratio || '16 / 9' }}
+        >
+          <video
+            key="mobile"
+            ref={videoEl}
+            onLoadedMetadata={(e) => setRatio(e.target.videoWidth / e.target.videoHeight)}
+            className="w-full h-full object-cover block"
+            autoPlay muted loop playsInline
+          >
+            <source src={videoAddMobile} type="video/mp4" />
+          </video>
+        </div>
+
+        {/* spacer reserving the video's height so flow starts below it */}
+        <div className="w-full" style={{ aspectRatio: ratio || '16 / 9' }} />
+
+        {/* logo, normal flow, scrolls away with the page */}
+        <div className="relative w-full flex z-10 items-center justify-center overflow-x-hidden">
+          <img
+            src={logo}
+            alt="Zyro"
+            draggable="false"
+            className="intro-logo w-[80vw] h-auto object-contain select-none"
+          />
+        </div>
+      </section>
+    )
+  }
+
   return (
-    <section ref={root} className="h-[250vh]">
-      <div className="intro-bg fixed inset-0 z-10 bg-white" />
-      <div className="intro-word fixed inset-0 z-[15] flex items-center justify-end select-none pointer-events-none">
+    <section ref={root} className="h-[250vh] z-20">
+      <div className="intro-bg fixed inset-0 bg-white" />
+      <div className="intro-word fixed inset-0 z-[15] flex items-center justify-center select-none pointer-events-none">
         <img
           src={logo}
           alt="Zyro"
           draggable="false"
-          className="w-[95vw] md:w-[70vw] h-auto object-contain"
+          className="intro-logo w-[95vw] md:w-[70vw] h-auto object-contain"
         />
       </div>
       <div
@@ -163,9 +193,10 @@ export default function IntroHero() {
         style={{ width: '60vw', height: '34vw', left: '20vw', top: '100vh' }}
       >
         <video
+          key="desktop"
           id='addvid'
           ref={videoEl}
-          onLoadedMetadata={(e) => { setRatio(e.target.videoWidth / e.target.videoHeight) }}
+          onLoadedMetadata={(e) => setRatio(e.target.videoWidth / e.target.videoHeight)}
           className="h-full w-full object-cover"
           autoPlay muted loop playsInline
         >

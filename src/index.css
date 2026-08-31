@@ -1,8 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap');
 @import "tailwindcss";
 
+
 @theme {
-  --color-base: #ffffff;
+  --color-base: #fffdf5;
   --color-ink: #0f0f0f;
   --color-ink-soft: #d10000;
   --color-ink-faint: #d10000ca;
@@ -48,3 +49,4 @@ html.lenis body {
 #addvid {
   filter: brightness(.8);
 }
+
